@@ -4,6 +4,8 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.Windows;
 using Debug = UnityEngine.Debug;
 
 public class Hack : MonoBehaviour
@@ -14,14 +16,18 @@ public class Hack : MonoBehaviour
 
     private GameData _gameData;
 
+    // UI
+    public InputField valueInput;
+    public Text valueViewText;
+
     /// <summary>
     /// Bob aici se ia de pe device si se da load la clasa
     /// </summary>
     public void Load()
     {
-        if (File.Exists(LocalFilePath))
+        if (System.IO.File.Exists(LocalFilePath))
         {
-            File.Delete(LocalFilePath);
+            System.IO.File.Delete(LocalFilePath);
             Debug.LogWarning("Local Old File Deleted");
         }
 
@@ -33,8 +39,11 @@ public class Hack : MonoBehaviour
     /// <summary>
     /// Bob aici setezi values
     /// </summary>
-    public void SetCoins(int coins = 4000)
+    public void SetCoins()
     {
+        int coins = int.Parse(valueInput.text);
+        valueViewText.text = "Value setted correctly to: " + coins;
+
         if (_gameData == null)
         {
             Debug.LogWarning("Not Loaded");
@@ -42,7 +51,6 @@ public class Hack : MonoBehaviour
         }
 
         _gameData.SetCoins(coins);
-        
     }
 
     /// <summary>
@@ -109,7 +117,7 @@ public class Hack : MonoBehaviour
         {
             var bf = new BinaryFormatter();
 
-            file = File.Open(LocalFilePath, FileMode.Open);
+            file = System.IO.File.Open(LocalFilePath, FileMode.Open);
             bf.Serialize(file, gameData);
         }
         finally
@@ -121,14 +129,14 @@ public class Hack : MonoBehaviour
     [CanBeNull]
     private static GameData LoadFromTarget()
     {
-        if (!File.Exists(LocalFilePath)) return null;
+        if (!System.IO.File.Exists(LocalFilePath)) return null;
 
         FileStream file = null;
 
         try
         {
             var bf = new BinaryFormatter();
-            file = File.Open(LocalFilePath, FileMode.Open);
+            file = System.IO.File.Open(LocalFilePath, FileMode.Open);
             var gameData = (GameData) bf.Deserialize(file);
 
             return gameData;
